@@ -1,0 +1,35 @@
+{
+	"schemaVersion": 1,
+	"id": "justducks",
+	"version": "${version}",
+	"name": "JustDucks",
+	"description": "A mod that adds ducks to minecraft",
+	"authors": [
+		"Genesis"
+	],
+	"contact": {
+		"homepage": "https://genesishacks.com",
+		"sources": ""
+	},
+	"license": "MIT",
+	"icon": "assets/justducks/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.genesis.Init"
+		],
+		"client": ["net.genesis.InitClient"]
+	},
+	"mixins": [
+		"justducks.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.14.13",
+		"minecraft": "~1.19.3",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
