@@ -2,31 +2,27 @@ package net.genesis.entity.Custom;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.Tameable;
+
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.passive.TurtleEntity;
-import net.minecraft.registry.Registry;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.apache.commons.codec.digest.MurmurHash3;
+
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.constant.DefaultAnimations;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animatable.instance.InstancedAnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.core.animation.*;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
@@ -35,11 +31,11 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class DuckEntity extends PassiveEntity implements GeoAnimatable {
 
-    //private static final RawAnimation walking_ani = RawAnimation.begin().thenLoop("animation.duck.walk");
-    private static final RawAnimation idle_ani = RawAnimation.begin().thenLoop("idle");
+    //private static final RawAnimation walking_ani = RawAnimation.begin().thenLoop("misc.walk");
+    //private static final RawAnimation idle_ani = RawAnimation.begin().thenLoop("misc.idle");
 
-    public DuckEntity(EntityType<? extends PassiveEntity> entityType, World world) {
-        super(entityType, world);
+    public DuckEntity(EntityType<? extends PassiveEntity> type, World world) {
+        super(type, world);
 
 
     }
@@ -56,28 +52,27 @@ public class DuckEntity extends PassiveEntity implements GeoAnimatable {
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3);
     }
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-
-
-    private <E extends GeoAnimatable>PlayState ani(AnimationState<E> event){
-        if (event.isMoving()){
-            //event.getController().setAnimation(walking_ani);
-            //return  PlayState.CONTINUE;
+    private PlayState predicate(AnimationState state) {
+        if(state.isMoving()) {
+            state.getController().setAnimation(RawAnimation.begin().thenLoop(("animation.duck.walk")));
+            return PlayState.CONTINUE;
         }
-        event.getController().setAnimation(RawAnimation.begin().thenPlay("idle"));
-        return PlayState.CONTINUE;
 
+        state.getController().setAnimation(RawAnimation.begin().thenLoop(("animation.duck.idle")));
+        return PlayState.CONTINUE;
     }
 
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        //controllerRegistrar.add(new AnimationController(this, "controller", 0, this::ani));
+   @Override
+   public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+       controllers.add(new AnimationController(this, "controller",
+               0, this::predicate));
     }
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
+        return cache;
     }
 
 
@@ -89,10 +84,10 @@ public class DuckEntity extends PassiveEntity implements GeoAnimatable {
     @Override
     protected void initGoals(){
         this.goalSelector.add(1, new WanderAroundGoal(this, 1.0));
-        this.goalSelector.add(2, new SwimGoal(this));
+        //this.goalSelector.add(2, new SwimGoal(this));
     }
 
-    //public static final SoundEvent ENTITY_DUCK_IDLE = Registry.register("entity.duck.idle");
+    //temporary sounds
     @Override
     protected SoundEvent getAmbientSound() {
         return SoundEvents.ENTITY_PARROT_HURT;
