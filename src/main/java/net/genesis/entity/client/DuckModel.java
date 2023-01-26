@@ -19,7 +19,7 @@ public class DuckModel  extends GeoModel<DuckEntity> {
 
     @Override
     public Identifier getAnimationResource(DuckEntity animatable) {
-        return new Identifier(Init.MOD_ID, "duck.animation.json");
+        return new Identifier(Init.MOD_ID, "animations/duck.animation.json");
     }
 
 }
